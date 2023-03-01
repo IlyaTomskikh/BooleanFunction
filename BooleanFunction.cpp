@@ -3,6 +3,7 @@
 //
 
 #include "BooleanFunction.h"
+#include <bitset>
 
 BooleanFunction::BooleanFunction(u_int v_n, unsigned short type): n(v_n) {
     if (n < 5) len = ((1 << n) + 31) >> 5;
@@ -44,6 +45,7 @@ BooleanFunction::~BooleanFunction() {
 }
 
 BooleanFunction::BooleanFunction(const std::string& bf) {
+    if (bf.find_first_not_of("01") != std::string::npos) throw std::runtime_error("string must contain only {0,1}*");
     if (bf.length() != 0 && (bf.length() & (bf.length() - 1)) != 0) throw std::runtime_error("string's length != 2^n");
     len = bf.length() >> 5;
     if ((bf.length() & 31) != 0) ++len;
@@ -128,16 +130,34 @@ std::string BooleanFunction::bits_el(u_int ix) {
     std::string res = "";
     auto val = f[ix];
     auto min = (n < 5) ? (1 << n) : 32;
-    for (int i = 0; i < min; ++i) res += std::to_string((val & (1 << i)) >> i);
+//    std::cout << "______________________" << '\n';
+//    std::cout << std::to_string(ix) + " <- ix | f[ix] ->" << std::bitset<sizeof(f[0])*8>(f[ix]) << std::endl;
+//    for (int i = 0; i < min; ++i) std::cout << std::to_string((val & (1 << i)) >> i);
+//    std::cout << "\n______________________" << '\n';
+    for (int i = 0; i < min; ++i) res += std::to_string(((val & (1 << i)) >> i));
     return res;
 }
 
 bool BooleanFunction::operator==(const BooleanFunction &rhs) const {
-    if (n != rhs.n || len != rhs.len) return false;
+    if (n != rhs.n || len != rhs.len || f == nullptr) return false;
     for (auto i = 0; i < len; ++i) if (f[i] != rhs.f[i]) return false;
     return true;
 }
 
 bool BooleanFunction::operator!=(const BooleanFunction &rhs) const {
     return !(rhs == *this);
+}
+
+BooleanFunction &BooleanFunction::operator=(const BooleanFunction &bf) {
+    if (this == &bf) return *this;
+    len = bf.len;
+    n = bf.n;
+    f = new u_int[len];
+    for (auto i = 0; i < len; ++i) f[i] = bf.f[i];
+    return *this;
+}
+
+BooleanFunction& BooleanFunction::operator=(const std::string &bf_str) {
+    *this = BooleanFunction(bf_str);
+    return *this;
 }

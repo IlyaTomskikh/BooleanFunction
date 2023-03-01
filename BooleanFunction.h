@@ -42,6 +42,10 @@ public:
 
     bool operator!=(const BooleanFunction &rhs) const;
 
+    BooleanFunction& operator=(const BooleanFunction &bf);
+
+    BooleanFunction& operator=(const std::string &bf_str);
+
 };
 
 

@@ -18,7 +18,7 @@ private:
     u_int *f{};
     u_int n{};
     u_int len{};
-    std::string bits_el(u_int ix);
+    std::string bits_el(u_int ix) const;
     u_int w_el(u_int ix);
 
 public:
@@ -33,7 +33,7 @@ public:
     BooleanFunction(BooleanFunction const &bf);
     BooleanFunction(const std::string& bf);
 
-    std::string to_string();
+    std::string to_string() const;
     u_int w();
 
     virtual ~BooleanFunction();
@@ -46,6 +46,29 @@ public:
 
     BooleanFunction& operator=(const std::string &bf_str);
 
+    u_int operator[](int i);
+
+    BooleanFunction& operator^=(const BooleanFunction &bf);
+
+    BooleanFunction operator^(const BooleanFunction &bf);
+
+    BooleanFunction operator&(const BooleanFunction &bf);
+
+    BooleanFunction& operator&=(const BooleanFunction &bf);
+
+    BooleanFunction operator<<(u_int k);
+
+    BooleanFunction& operator<<=(u_int k);
+
+    static std::vector<int> green(const BooleanFunction &bf);
+
+    std::vector<int> walsh_adamar_transformation();
+
+    friend std::ostream& operator<<(std::ostream& os, const BooleanFunction& bf);
+
+    BooleanFunction mobius();
+
+    std::string anf();
 };
 
 
